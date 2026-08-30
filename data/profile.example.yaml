@@ -1,0 +1,41 @@
+# Fictional sample data. Copy this file to data/profile.yaml and replace every value.
+identity:
+  name: John Doe
+  email: john.doe@example.com
+  phone: +1-202-555-0147
+
+roles:
+  senior_software_engineer:
+    company: Example Labs
+    position: Senior Software Engineer
+    location: Remote
+    start_date: 2021-01
+    end_date: present
+    bullets:
+      platform: Built a self-service platform that reduced deployment time by 30%.
+      delivery: Led cross-functional delivery of a customer-facing feature from discovery through launch.
+      mentoring: Mentored four engineers through design reviews, pairing, and technical workshops.
+
+  software_engineer:
+    company: Sample Systems
+    position: Software Engineer
+    location: Example City, CA
+    start_date: 2018-06
+    end_date: 2020-12
+    bullets:
+      automation: Automated a manual reporting workflow, saving the team 10 hours each week.
+      reliability: Improved service reliability by adding tests, monitoring, and incident runbooks.
+      collaboration: Partnered with product and design to turn customer feedback into shipped improvements.
+
+education:
+  institution: Example University
+  degree: Bachelor of Science
+  area: Computer Science
+
+projects:
+  portfolio:
+    name: Open Source Portfolio Project
+    summary: A short description of what the project does and who it helps.
+    bullets:
+      implementation: Built the project with Python, TypeScript, and PostgreSQL.
+      impact: Documented the project and supported contributions from new maintainers.

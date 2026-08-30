@@ -1,0 +1,83 @@
+# RenderCV Resume Template
+
+A reusable system for maintaining one career profile and generating multiple targeted resumes with [RenderCV](https://github.com/rendercv/rendercv). Profile facts and reusable achievement bullets live in one file; each variant selects and arranges the content needed for a particular role.
+
+Generated RenderCV YAML, Typst, PNG, and PDF files are build artifacts and are not committed.
+
+## Prerequisites
+
+- [uv 0.12.5](https://docs.astral.sh/uv/getting-started/installation/)
+- `make`
+
+## Quick start
+
+```sh
+git clone <your-repository-url>
+cd <your-repository-directory>
+make setup
+```
+
+`make setup` installs the pinned dependencies and creates `data/profile.yaml` from the fictional sample. Then:
+
+1. Replace every sample value in `data/profile.yaml` with your own information.
+2. Edit `variants/general.yaml` to select your role and bullet IDs.
+3. Build the resume:
+
+```sh
+make all
+```
+
+The PDF is written to `dist/`. Its default filename is derived from the profile name and variant slug, such as `Alex_Rivera_general.pdf`.
+
+## Repository layout
+
+```text
+config/design.yaml           Shared RenderCV design
+data/profile.example.yaml    Fictional starter profile (tracked)
+data/profile.yaml            Your local profile (ignored)
+variants/general.yaml        Starter resume variant
+scripts/build.py             Generates RenderCV input and renders resumes
+pyproject.toml               Direct dependency pins and required uv version
+requirements.lock            Fully resolved runtime dependencies
+build/                       Generated sources and previews (ignored)
+dist/                        Generated PDFs (ignored)
+```
+
+## Commands
+
+```sh
+make init                       # Create data/profile.yaml if it is missing
+make all                        # Build every variant
+make sources                    # Generate RenderCV YAML without rendering
+make variant VARIANT=general    # Build one variant
+make clean                      # Remove build/ and dist/
+```
+
+## Profile format
+
+`data/profile.yaml` contains:
+
+- `identity`: name, email, and phone number
+- `roles`: employment entries with reusable, uniquely named bullets
+- `education`: one education entry
+- `projects`: zero or more projects with an optional summary and reusable bullets
+
+Use `data/profile.example.yaml` as the schema reference. The real profile is ignored so contact details and career history are not accidentally committed to this template repository.
+
+## Adding a variant
+
+Copy `variants/general.yaml`, choose a unique `slug`, write a targeted summary and skills section, then select role and bullet IDs from `data/profile.yaml`.
+
+The optional `output_name` and `pdf_title` fields override generated values. If omitted, both are derived from the profile identity and variant slug.
+
+## Customizing the design
+
+Edit `config/design.yaml` to change typography, spacing, colors, margins, section titles, and entry templates. The shared design is applied to every variant.
+
+## Keeping personal data private
+
+Before contributing changes upstream, check `git status` and confirm that `data/profile.yaml`, `build/`, and `dist/` are not staged. Do not force-add generated resumes or private profile data.
+
+## Versioning
+
+The project version is stored in `pyproject.toml`. Record user-facing template changes in `CHANGELOG.md`.

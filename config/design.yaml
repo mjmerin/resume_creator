@@ -1,0 +1,98 @@
+design:
+  theme: engineeringresumes
+  page:
+    size: us-letter
+    top_margin: 0.55in
+    bottom_margin: 0.55in
+    left_margin: 0.62in
+    right_margin: 0.62in
+    show_footer: false
+    show_top_note: false
+  colors:
+    body: rgb(0, 0, 0)
+    name: rgb(0, 0, 0)
+    headline: rgb(0, 0, 0)
+    connections: rgb(0, 0, 0)
+    section_titles: rgb(0, 0, 0)
+    links: rgb(0, 0, 0)
+  typography:
+    line_spacing: 0.55em
+    alignment: justified
+    date_and_location_column_alignment: right
+    font_family:
+      body: XCharter
+      name: XCharter
+      headline: XCharter
+      connections: XCharter
+      section_titles: XCharter
+    font_size:
+      body: 9.5pt
+      name: 22pt
+      headline: 9.5pt
+      connections: 9.5pt
+      section_titles: 1.08em
+    bold:
+      name: true
+      section_titles: true
+  links:
+    underline: false
+    show_external_link_icon: false
+  header:
+    alignment: center
+    space_below_name: 0.12in
+    space_below_headline: 0in
+    space_below_connections: 0.18in
+    connections:
+      phone_number_format: national
+      hyperlink: true
+      show_icons: false
+      separator: '|'
+      space_between_connections: 0.12in
+  section_titles:
+    type: with_full_line
+    line_thickness: 0.5pt
+    space_above: 0.18in
+    space_below: 0.09in
+  sections:
+    allow_page_break: true
+    space_between_regular_entries: 0.18in
+    space_between_text_based_entries: 0.06in
+    show_time_spans_in: []
+  entries:
+    date_and_location_width: 2.05in
+    side_space: 0in
+    space_between_columns: 0.08in
+    allow_page_break: false
+    short_second_row: false
+    degree_width: 0.55in
+    summary:
+      space_above: 0.02in
+      space_left: 0in
+    highlights:
+      bullet: '-'
+      nested_bullet: '-'
+      space_left: 0.12in
+      space_above: 0.03in
+      space_between_items: 0.025in
+      space_between_bullet_and_text: 0.25em
+  templates:
+    date_range: START_DATE - END_DATE
+    experience_entry:
+      main_column: |-
+        **COMPANY**, *POSITION* - LOCATION
+        SUMMARY
+        HIGHLIGHTS
+      date_and_location_column: DATE
+    education_entry:
+      main_column: |-
+        **INSTITUTION**, DEGREE_WITH_AREA
+        SUMMARY
+        HIGHLIGHTS
+      degree_column:
+      date_and_location_column: DATE
+    normal_entry:
+      main_column: |-
+        **NAME** - **LOCATION**
+        SUMMARY
+        HIGHLIGHTS
+      date_and_location_column: DATE

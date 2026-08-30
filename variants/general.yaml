@@ -1,0 +1,15 @@
+# Select reusable role and bullet IDs from data/profile.yaml for this resume.
+slug: general
+summary: Software engineer with experience building reliable products, improving delivery workflows, and collaborating across engineering, product, and design. Combines hands-on implementation with technical leadership, mentoring, and a focus on measurable customer outcomes.
+experience:
+  - role: senior_software_engineer
+    bullets: [platform, delivery, mentoring]
+  - role: software_engineer
+    bullets: [automation, reliability, collaboration]
+skills:
+  - label: Languages
+    details: Python, TypeScript, JavaScript, SQL
+  - label: Platforms & Delivery
+    details: Git, CI/CD, Docker, cloud platforms, automated testing, monitoring
+  - label: Leadership
+    details: Technical planning, mentoring, cross-functional delivery, Agile methodologies
