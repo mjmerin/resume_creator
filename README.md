@@ -4,6 +4,15 @@ A reusable system for maintaining one career profile and generating multiple tar
 
 Generated RenderCV YAML, Typst, PNG, and PDF files are build artifacts and are not committed.
 
+## Recommended Local AI Models
+
+This project was built using a Macbook Pro M1 Max with 32 GB of unified memory. 
+
+`qwen3.5:27b-q4_K_M` was determined to be the best for this workflow and that particular machine. 
+
+For slower machines I recommend using `qwen3.5:4b-q4_K_M`
+
+
 ## Prerequisites
 
 - [uv 0.12.5 or later](https://docs.astral.sh/uv/getting-started/installation/)
@@ -67,12 +76,12 @@ brew install ollama
 ollama serve
 ```
 
-3. Download your favorite model. In our case we are using Gemma 2 9b Q8_0
+3. Download your favorite model. In our case we are using `qwen3.5:27b-q4_K_M`
 
-This model is chosen based on a Macbook Pro M1 Max with 32 GB of Ram
+This model is chosen based on a Macbook Pro M1 Max with 32 GB of unified memory. 
 
 ```sh
-ollama run gemma2:9b-instruct-q8_0
+ollama run qwen3.5:27b-q4_K_M
 ```
 
 ## Local AI job matching
@@ -87,11 +96,11 @@ coverage, and truthful tailoring suggestions.
 Job matching uses only Python's standard library, so it does not require `make setup`
 or any downloaded Python packages. `make setup` is only needed to render resume PDFs.
 
-The default model is `gemma2:9b-instruct-q8_0`, matching the model in the setup
+The default model is `qwen3.5:27b-q4_K_M`, matching the model in the setup
 instructions. Override it when needed:
 
 ```sh
-OLLAMA_MODEL=gemma2:9b-instruct-q8_0 make match JOB=job-posting.txt
+OLLAMA_MODEL=qwen3.5:27b-q4_K_M make match JOB=job-posting.txt
 OLLAMA_HOST=http://127.0.0.1:11434 make match JOB=job-posting.txt
 ```
 
