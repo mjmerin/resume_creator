@@ -6,7 +6,7 @@ Generated RenderCV YAML, Typst, PNG, and PDF files are build artifacts and are n
 
 ## Prerequisites
 
-- [uv 0.12.5](https://docs.astral.sh/uv/getting-started/installation/)
+- [uv 0.12.5 or later](https://docs.astral.sh/uv/getting-started/installation/)
 - `make`
 
 ## Quick start
