@@ -1,6 +1,6 @@
 [project]
 name = "rendercv-resume-template"
-version = "0.1.0"
+version = "0.1.2"
 description = "A reusable, version-controlled RenderCV resume template"
 requires-python = ">=3.12,<3.15"
 dependencies = [

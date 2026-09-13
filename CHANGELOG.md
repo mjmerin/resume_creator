@@ -2,6 +2,17 @@
 
 All notable changes to this template are documented here.
 
+## [0.1.2] - 2026-09-13
+
+### Added
+
+- Dependency-free local Ollama job matching with a 0-100 score, evidence, gaps, keyword coverage, and tailoring recommendations.
+- Ignore rules for private profile data, virtual environments, and generated resume artifacts.
+
+### Changed
+
+- Allow uv 0.12.5 and later instead of requiring one exact patch release.
+
 ## [0.1.0] - 2026-08-30
 
 ### Added
