@@ -6,14 +6,12 @@ Generated RenderCV YAML, Typst, PNG, and PDF files are build artifacts and are n
 
 ## Prerequisites
 
-- [uv 0.12.5](https://docs.astral.sh/uv/getting-started/installation/)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - `make`
 
 ## Quick start
 
 ```sh
-git clone <your-repository-url>
-cd <your-repository-directory>
 make setup
 ```
 
@@ -73,11 +71,3 @@ The optional `output_name` and `pdf_title` fields override generated values. If 
 ## Customizing the design
 
 Edit `config/design.yaml` to change typography, spacing, colors, margins, section titles, and entry templates. The shared design is applied to every variant.
-
-## Keeping personal data private
-
-Before contributing changes upstream, check `git status` and confirm that `data/profile.yaml`, `build/`, and `dist/` are not staged. Do not force-add generated resumes or private profile data.
-
-## Versioning
-
-The project version is stored in `pyproject.toml`. Record user-facing template changes in `CHANGELOG.md`.
