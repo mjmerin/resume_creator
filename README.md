@@ -77,15 +77,20 @@ ollama run gemma2:9b-instruct-q8_0
 
 ## Local AI job matching
 
-`make match` compares the selected resume variant with a job posting using a local
-[Ollama](https://ollama.com/) model. It sends the role-relevant resume content (not
-your contact details) and job posting only to the Ollama server on your Mac, then
-prints and saves a Markdown report under `build/matches/`. The report includes a
-calibrated match score out of 100, evidence-backed matches, unverified gaps, keyword
-coverage, and truthful tailoring suggestions.
+`make match` compares the selected resume variant with a job posting using
+[Ollama](https://ollama.com/). Python first resolves the variant through the same
+selection code used for rendering, then sends only those selected resume sections
+(without contact details) and the posting to the configured Ollama host. The report
+is printed and saved under `build/matches/`.
 
-Job matching uses only Python's standard library, so it does not require `make setup`
-or any downloaded Python packages. `make setup` is only needed to render resume PDFs.
+The model classifies every posting requirement as required or preferred and as
+evidenced, partially evidenced, or unverified. Python calculates the score: required
+items have weight 2, preferred items have weight 1, and evidence receives full, half,
+or zero credit. This makes the arithmetic reproducible while retaining evidence-backed
+explanations, keyword coverage, and truthful tailoring suggestions.
+
+Matching uses the project environment created by `make setup`, including the same YAML
+parser as the rendering workflow.
 
 The default model is `gemma2:9b-instruct-q8_0`, matching the model in the setup
 instructions. Override it when needed:
@@ -98,6 +103,25 @@ OLLAMA_HOST=http://127.0.0.1:11434 make match JOB=job-posting.txt
 If Ollama is not already running, launch it with `ollama serve`. Use a resume variant
 for the version of the resume you intend to submit; the score reflects the selected
 bullets and skills rather than every item in your full profile.
+
+Privacy depends on `OLLAMA_HOST`. A loopback host such as `127.0.0.1`, `::1`, or
+`localhost` sends the request to a local endpoint. Configuring any non-loopback host
+sends the resolved resume and posting to that host, and the generated report says so.
+
+## Evaluating models
+
+The human-labeled fixture in `evaluation/cases.json` contains 20 representative
+postings, including unsupported skills, partial evidence, preferred qualifications,
+and a prompt-injection attempt. Compare one or more installed models with:
+
+```sh
+.venv/bin/python scripts/benchmark_match.py gemma2:9b-instruct-q8_0 --runs 3
+```
+
+The benchmark reports invented-evidence rate, required-requirement recall, JSON success
+rate, score consistency, mean runtime, and Ollama-reported loaded VRAM. Use invented
+evidence as the primary rejection criterion; score agreement is secondary. See
+`evaluation/README.md` for details.
 
 
 ## Profile format
