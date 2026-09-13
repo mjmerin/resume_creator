@@ -2,6 +2,19 @@
 
 All notable changes to this template are documented here.
 
+## [Unreleased]
+
+### Added
+
+- Selectable Ollama, OpenAI, and Anthropic providers for résumé job matching.
+- Secure interactive API-key entry and standard environment-variable support for cloud providers.
+- Strict structured-output requests and regression tests for OpenAI Responses and Anthropic Messages APIs.
+
+### Changed
+
+- Include the selected provider and data destination in generated match reports.
+- Allow `make match` to accept pasted terminal input as documented.
+
 ## [0.1.3] - 2026-09-13
 
 ### Changed
