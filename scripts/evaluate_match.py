@@ -28,6 +28,8 @@ PROFILE_PATH = ROOT / "data" / "profile.yaml"
 VARIANTS_DIR = ROOT / "variants"
 DEFAULT_MODEL = "qwen3.5:27b-q4_K_M"
 DEFAULT_HOST = "http://127.0.0.1:11434"
+DEFAULT_TIMEOUT = 300.0
+DEFAULT_NUM_CTX = 8192
 
 SYSTEM_POLICY = """You are a rigorous résumé-to-job evidence classifier.
 
@@ -129,13 +131,27 @@ def api_url(host: str) -> str:
     return f"{host}/chat" if host.endswith("/api") else f"{host}/api/chat"
 
 
-def call_ollama(host: str, model: str, prompt: str) -> dict[str, Any]:
+def call_ollama(
+    host: str,
+    model: str,
+    prompt: str,
+    timeout: float = DEFAULT_TIMEOUT,
+    num_ctx: int = DEFAULT_NUM_CTX,
+) -> dict[str, Any]:
     payload = json.dumps(
         {
             "model": model,
-            "stream": False,
+            # Ollama's non-streaming response can remain completely silent while a
+            # large model generates, causing urllib's socket timeout to fire even
+            # though the server is still working. Consume the NDJSON stream so the
+            # timeout measures inactivity instead of total generation time.
+            "stream": True,
+            # Reasoning models can spend the entire context window on hidden
+            # thinking and finish without emitting the requested JSON. This task's
+            # rubric is explicit, so reserve the output budget for the report.
+            "think": False,
             "format": REPORT_SCHEMA,
-            "options": {"temperature": 0},
+            "options": {"temperature": 0, "num_ctx": num_ctx},
             "messages": [
                 {"role": "system", "content": SYSTEM_POLICY},
                 {"role": "user", "content": prompt},
@@ -146,19 +162,47 @@ def call_ollama(host: str, model: str, prompt: str) -> dict[str, Any]:
         api_url(host), data=payload, headers={"Content-Type": "application/json"}, method="POST"
     )
     try:
-        with urlopen(request, timeout=300) as response:
-            body = json.loads(response.read().decode("utf-8"))
+        chunks: list[str] = []
+        done_reason: str | None = None
+        with urlopen(request, timeout=timeout) as response:
+            for raw_line in response:
+                if not raw_line.strip():
+                    continue
+                try:
+                    body = json.loads(raw_line.decode("utf-8"))
+                except (UnicodeDecodeError, json.JSONDecodeError) as error:
+                    raise RuntimeError("Ollama returned an invalid streaming response") from error
+                if isinstance(body.get("error"), str):
+                    raise RuntimeError(f"Ollama returned an error: {body['error']}")
+                content = body.get("message", {}).get("content")
+                if isinstance(content, str):
+                    chunks.append(content)
+                if isinstance(body.get("done_reason"), str):
+                    done_reason = body["done_reason"]
     except HTTPError as error:
         detail = error.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"Ollama returned HTTP {error.code}: {detail}") from error
+    except TimeoutError as error:
+        raise RuntimeError(
+            f"Ollama sent no data for {timeout:g} seconds while using {model!r}. "
+            "Retry, increase OLLAMA_TIMEOUT, or use a smaller OLLAMA_MODEL."
+        ) from error
     except URLError as error:
         raise RuntimeError(
             f"Could not reach Ollama at {host}. Start it with `ollama serve` and try again."
         ) from error
-    content = body.get("message", {}).get("content")
-    if not isinstance(content, str):
+    content = "".join(chunks)
+    if not content:
         raise RuntimeError("Ollama returned no chat response")
-    report = parse_report(content)
+    try:
+        report = parse_report(content)
+    except RuntimeError as error:
+        if done_reason == "length":
+            raise RuntimeError(
+                f"Ollama reached its {num_ctx}-token context limit before completing the report. "
+                "Increase OLLAMA_NUM_CTX or use a shorter job posting."
+            ) from error
+        raise
     report["score"] = calculate_score(report["requirements"])
     return report
 
@@ -317,19 +361,41 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--host", default=os.environ.get("OLLAMA_HOST", DEFAULT_HOST), help="Ollama server URL"
     )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=os.environ.get("OLLAMA_TIMEOUT", str(DEFAULT_TIMEOUT)),
+        help="seconds to wait without receiving Ollama data (default: 300)",
+    )
+    parser.add_argument(
+        "--num-ctx",
+        type=int,
+        default=os.environ.get("OLLAMA_NUM_CTX", str(DEFAULT_NUM_CTX)),
+        help="Ollama context window in tokens (default: 8192)",
+    )
     parser.add_argument("--output", type=Path, help="Markdown report path (default: build/matches/)")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.timeout <= 0:
+        raise ValueError("--timeout must be greater than zero")
+    if args.num_ctx <= 0:
+        raise ValueError("--num-ctx must be greater than zero")
     if not PROFILE_PATH.exists():
         raise FileNotFoundError("Missing data/profile.yaml. Run `make init`, then add your résumé data.")
     job_posting = read_job_posting(args.job_file)
     variant = load_variant(args.variant)
     profile = load_yaml(PROFILE_PATH)
     resolved_resume = build_resume_sections(profile, variant)
-    report = call_ollama(args.host, args.model, prompt_for(resolved_resume, job_posting))
+    report = call_ollama(
+        args.host,
+        args.model,
+        prompt_for(resolved_resume, job_posting),
+        timeout=args.timeout,
+        num_ctx=args.num_ctx,
+    )
     rendered = render_report(report, args.variant, args.model, args.host)
     output = args.output
     if output is None:
