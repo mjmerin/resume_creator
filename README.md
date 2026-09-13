@@ -50,8 +50,35 @@ make init                       # Create data/profile.yaml if it is missing
 make all                        # Build every variant
 make sources                    # Generate RenderCV YAML without rendering
 make variant VARIANT=general    # Build one variant
+make match                      # Paste a job posting; Ctrl-D submits it to local Ollama
+make match JOB=job-posting.txt  # Evaluate a job-posting text file
+make match VARIANT=general JOB=job-posting.txt  # Evaluate a selected resume variant
 make clean                      # Remove build/ and dist/
 ```
+
+## Local AI job matching
+
+`make match` compares the selected resume variant with a job posting using a local
+[Ollama](https://ollama.com/) model. It sends the role-relevant resume content (not
+your contact details) and job posting only to the Ollama server on your Mac, then
+prints and saves a Markdown report under `build/matches/`. The report includes a
+calibrated match score out of 100, evidence-backed matches, unverified gaps, keyword
+coverage, and truthful tailoring suggestions.
+
+Job matching uses only Python's standard library, so it does not require `make setup`
+or any downloaded Python packages. `make setup` is only needed to render resume PDFs.
+
+The default model is `gemma2:9b-instruct-q8_0`, matching the model in the setup
+instructions. Override it when needed:
+
+```sh
+OLLAMA_MODEL=gemma2:9b-instruct-q8_0 make match JOB=job-posting.txt
+OLLAMA_HOST=http://127.0.0.1:11434 make match JOB=job-posting.txt
+```
+
+If Ollama is not already running, launch it with `ollama serve`. Use a resume variant
+for the version of the resume you intend to submit; the score reflects the selected
+bullets and skills rather than every item in your full profile.
 
 ## Profile format
 
