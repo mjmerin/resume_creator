@@ -54,6 +54,27 @@ make match VARIANT=general JOB=job-posting.txt  # Evaluate a selected resume var
 make clean                      # Remove build/ and dist/
 ```
 
+## Local AI Setup
+
+1. Install `ollama`
+
+```sh
+brew install ollama
+```
+
+2. Start the Ollama Server
+```sh
+ollama serve
+```
+
+3. Download your favorite model. In our case we are using Gemma 2 9b Q8_0
+
+This model is chosen based on a Macbook Pro M1 Max with 32 GB of Ram
+
+```sh
+ollama run gemma2:9b-instruct-q8_0
+```
+
 ## Local AI job matching
 
 `make match` compares the selected resume variant with a job posting using a local
@@ -77,6 +98,7 @@ OLLAMA_HOST=http://127.0.0.1:11434 make match JOB=job-posting.txt
 If Ollama is not already running, launch it with `ollama serve`. Use a resume variant
 for the version of the resume you intend to submit; the score reflects the selected
 bullets and skills rather than every item in your full profile.
+
 
 ## Profile format
 
