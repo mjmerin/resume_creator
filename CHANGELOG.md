@@ -13,6 +13,12 @@ All notable changes to this template are documented here.
 
 - Allow uv 0.12.5 and later instead of requiring one exact patch release.
 
+## [0.1.1] - 2026-09-10
+
+### Changed
+- Updated the dependency for `uv` so we don't have to download a specific version.
+- Updated `README.md`.
+
 ## [0.1.0] - 2026-08-30
 
 ### Added
