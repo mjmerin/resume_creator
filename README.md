@@ -77,9 +77,6 @@ Ollama remains the default and requires no API key. Selection has two parts:
 | OpenAI | `openai` | `gpt-5.6-sol` | `OPENAI_API_KEY` |
 | Anthropic Claude | `anthropic` | `claude-sonnet-5` | `ANTHROPIC_API_KEY` |
 
-For OpenAI models, use `PROVIDER=openai`. `chatgpt` is not a provider value in this
-project: ChatGPT is the consumer product, while this matcher calls the OpenAI API.
-
 For example, to evaluate a posting with GPT-5.6 Sol and enter the API key securely when
 prompted:
 
