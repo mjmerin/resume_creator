@@ -2,6 +2,18 @@
 
 All notable changes to this template are documented here.
 
+## Unreleased
+
+### Changed
+
+- Resolve selected résumé content in shared Python code before job-match requests.
+- Calculate weighted match scores deterministically from requirement evidence classifications.
+- Harden Ollama requests with a system policy, schema grounding, and host-aware privacy reporting.
+
+### Added
+
+- A 20-posting, human-labeled model benchmark and regression tests for matching behavior.
+
 ## [0.1.2] - 2026-09-13
 
 ### Added
