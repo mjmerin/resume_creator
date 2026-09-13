@@ -124,7 +124,7 @@ postings, including unsupported skills, partial evidence, preferred qualificatio
 and a prompt-injection attempt. Compare one or more installed models with:
 
 ```sh
-.venv/bin/python scripts/benchmark_match.py gemma2:9b-instruct-q8_0 --runs 3
+.venv/bin/python scripts/benchmark_match.py qwen3.5:27b-q4_K_M --runs 3
 ```
 
 The benchmark reports invented-evidence rate, required-requirement recall, JSON success

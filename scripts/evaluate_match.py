@@ -26,7 +26,7 @@ except ImportError:  # Support direct execution as scripts/evaluate_match.py.
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE_PATH = ROOT / "data" / "profile.yaml"
 VARIANTS_DIR = ROOT / "variants"
-DEFAULT_MODEL = "gemma2:9b-instruct-q8_0"
+DEFAULT_MODEL = "qwen3.5:27b-q4_K_M"
 DEFAULT_HOST = "http://127.0.0.1:11434"
 
 SYSTEM_POLICY = """You are a rigorous résumé-to-job evidence classifier.
