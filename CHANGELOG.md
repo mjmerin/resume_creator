@@ -9,6 +9,7 @@ All notable changes to this template are documented here.
 - Resolve selected résumé content in shared Python code before job-match requests.
 - Calculate weighted match scores deterministically from requirement evidence classifications.
 - Harden Ollama requests with a system policy, schema grounding, and host-aware privacy reporting.
+- Stream Ollama match responses, reserve context for structured output, and report timeouts or context exhaustion clearly.
 
 ### Added
 

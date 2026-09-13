@@ -109,6 +109,19 @@ OLLAMA_MODEL=qwen3.5:27b-q4_K_M make match JOB=job-posting.txt
 OLLAMA_HOST=http://127.0.0.1:11434 make match JOB=job-posting.txt
 ```
 
+The response is streamed so long generations do not fail merely because their total
+runtime exceeds five minutes. `OLLAMA_TIMEOUT` controls how many seconds the matcher
+waits when Ollama sends no data at all. Matching uses an 8,192-token context window;
+`OLLAMA_NUM_CTX` can increase it for unusually long postings. If the model takes more
+than five minutes to load or stalls before its first token, either increase the
+timeout or select the smaller recommended model:
+
+```sh
+OLLAMA_TIMEOUT=900 make match JOB=job-posting.txt
+OLLAMA_NUM_CTX=16384 make match JOB=job-posting.txt
+OLLAMA_MODEL=qwen3.5:4b-q4_K_M make match JOB=job-posting.txt
+```
+
 If Ollama is not already running, launch it with `ollama serve`. Use a resume variant
 for the version of the resume you intend to submit; the score reflects the selected
 bullets and skills rather than every item in your full profile.
