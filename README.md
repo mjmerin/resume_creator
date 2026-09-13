@@ -57,13 +57,72 @@ make init                       # Create data/profile.yaml if it is missing
 make all                        # Build every variant
 make sources                    # Generate RenderCV YAML without rendering
 make variant VARIANT=general    # Build one variant
-make match                      # Paste a job posting; Ctrl-D submits it to local Ollama
+make match                      # Paste a job posting; Ctrl-D submits it to the selected AI provider
 make match JOB=job-posting.txt  # Evaluate a job-posting text file
 make match VARIANT=general JOB=job-posting.txt  # Evaluate a selected resume variant
 make clean                      # Remove build/ and dist/
 ```
 
-## Local AI Setup
+## AI provider setup
+
+Job matching supports a local Ollama model, the OpenAI API, or the Anthropic API.
+Ollama remains the default and requires no API key. Selection has two parts:
+
+- `PROVIDER` chooses the service: `ollama`, `openai`, or `anthropic`.
+- `MODEL` chooses the exact model ID offered by that service.
+
+| Service | `PROVIDER` | Example `MODEL` | API key variable |
+| --- | --- | --- | --- |
+| Local Ollama | `ollama` | `qwen3.5:27b-q4_K_M` | None |
+| OpenAI | `openai` | `gpt-5.6-sol` | `OPENAI_API_KEY` |
+| Anthropic Claude | `anthropic` | `claude-sonnet-5` | `ANTHROPIC_API_KEY` |
+
+For OpenAI models, use `PROVIDER=openai`. `chatgpt` is not a provider value in this
+project: ChatGPT is the consumer product, while this matcher calls the OpenAI API.
+
+For example, to evaluate a posting with GPT-5.6 Sol and enter the API key securely when
+prompted:
+
+```sh
+make match PROVIDER=openai MODEL=gpt-5.6-sol JOB=job-posting.txt
+```
+
+The exact [GPT-5.6 Sol model ID](https://developers.openai.com/api/docs/models/gpt-5.6-sol)
+is `gpt-5.6-sol`. OpenAI also documents `gpt-5.6` as an alias that currently routes to
+Sol; the explicit ID is clearer for reproducible runs.
+
+Additional examples:
+
+```sh
+# Local (default)
+make match PROVIDER=ollama MODEL=qwen3.5:27b-q4_K_M JOB=job-posting.txt
+
+# OpenAI Responses API using the balanced GPT-5.6 Terra model
+make match PROVIDER=openai MODEL=gpt-5.6-terra JOB=job-posting.txt
+
+# Anthropic Messages API
+make match PROVIDER=anthropic MODEL=claude-sonnet-5 JOB=job-posting.txt
+```
+
+When OpenAI or Anthropic is selected and its API key is not already in the environment,
+the command prompts for the key with hidden input. The key is used for that invocation
+only and is not written to the project. For non-interactive use, set the standard
+provider variable before running the command:
+
+```sh
+export OPENAI_API_KEY="your-key"
+# or
+export ANTHROPIC_API_KEY="your-key"
+```
+
+Provider and model choices can also be saved in your shell environment with
+`MODEL_PROVIDER`, `OLLAMA_MODEL`, `OPENAI_MODEL`, or `ANTHROPIC_MODEL`. Cloud defaults
+are `gpt-5.6-terra` for OpenAI and `claude-sonnet-5` for Anthropic; passing `MODEL`
+always takes precedence. The selected cloud model must support structured JSON output.
+For an API-compatible proxy, set `OPENAI_BASE_URL` or `ANTHROPIC_BASE_URL`; non-loopback
+URLs must use HTTPS so credentials are not sent in clear text.
+
+### Local Ollama setup
 
 1. Install `ollama`
 
@@ -84,13 +143,13 @@ This model is chosen based on a Macbook Pro M1 Max with 32 GB of unified memory.
 ollama run qwen3.5:27b-q4_K_M
 ```
 
-## Local AI job matching
+## AI job matching
 
 `make match` compares the selected resume variant with a job posting using
-[Ollama](https://ollama.com/). Python first resolves the variant through the same
-selection code used for rendering, then sends only those selected resume sections
-(without contact details) and the posting to the configured Ollama host. The report
-is printed and saved under `build/matches/`.
+the selected AI provider. Python first resolves the variant through the same selection
+code used for rendering, then sends only those selected resume sections (without
+contact details) and the posting to that provider. The report is printed and saved
+under `build/matches/`.
 
 The model classifies every posting requirement as required or preferred and as
 evidenced, partially evidenced, or unverified. Python calculates the score: required
@@ -99,9 +158,10 @@ or zero credit. This makes the arithmetic reproducible while retaining evidence-
 explanations, keyword coverage, and truthful tailoring suggestions.
 
 Matching uses the project environment created by `make setup`, including the same YAML
-parser as the rendering workflow.
+parser as the rendering workflow. The OpenAI and Anthropic integrations use their HTTP
+APIs directly, so no extra SDK dependencies are required.
 
-The default model is `qwen3.5:27b-q4_K_M`, matching the model in the setup
+The default Ollama model is `qwen3.5:27b-q4_K_M`, matching the model in the setup
 instructions. Override it when needed:
 
 ```sh
@@ -126,9 +186,11 @@ If Ollama is not already running, launch it with `ollama serve`. Use a resume va
 for the version of the resume you intend to submit; the score reflects the selected
 bullets and skills rather than every item in your full profile.
 
-Privacy depends on `OLLAMA_HOST`. A loopback host such as `127.0.0.1`, `::1`, or
-`localhost` sends the request to a local endpoint. Configuring any non-loopback host
-sends the resolved resume and posting to that host, and the generated report says so.
+Privacy depends on the selected provider. A loopback `OLLAMA_HOST` such as `127.0.0.1`,
+`::1`, or `localhost` keeps the model request local. Selecting OpenAI or Anthropic sends
+the resolved resume sections and job posting to that provider. Configuring a
+non-loopback Ollama host sends the same data to that host. Every generated report states
+the provider and whether its destination was local or remote.
 
 ## Evaluating models
 
